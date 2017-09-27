@@ -1,0 +1,1 @@
+# setupall.sh
