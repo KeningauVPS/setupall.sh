@@ -59,6 +59,24 @@ fi
 # go to root
 cd
 
+red='\e[1;31m'
+               green='\e[0;32m'
+               NC='\e[0m'
+
+               echo -e "\e[38;5;82m Connecting to Autoscript Orangkuatsabahan..." | lolcat
+			   sleep 1
+
+			   echo -e " Connecting to your ip : $myip .... " | lolcat
+               sleep 2
+                          echo -e  Proses ini akan mengambil masa 10-15 minit" | lolcat
+		sleep 2.5	  
+			   echo -e " IP Bos Berjaya Di Daftarkan..." | lolcat
+               sleep 1.5
+               
+			   echo -e "Mula Setup..." | lolcat
+               sleep 1
+	       cd
+
 # disable ipv6
 echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
 sed -i '$ i\echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6' /etc/rc.local
@@ -126,20 +144,6 @@ apt-file update
 # setting vnstat
 vnstat -u -i eth0
 service vnstat restart
-
-
-# text gambar
-apt-get install boxes
-
-# color text
-cd
-rm -rf /root/.bashrc
-wget -O /root/.bashrc "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/.bashrc"
-
-# install lolcat
-sudo apt-get -y install ruby
-sudo gem install lolcat
-
 
 # install webserver
 cd
@@ -371,76 +375,12 @@ wget http://borneobesthosting.me/autoscript/openvpn.sh && chmod +x openvpn.sh &&
 # install stunnel4 ssl
 wget http://borneobesthosting.me/autoscript/stunnel4.sh && chmod +x stunnel4.sh && ./stunnel4.sh
 
+ #menu
+ cd
+eget https://raw.githubusercontent.com/KeningauVPS/sslmode/master/tools/menu
+chmod +x menu
+./menu
 
-# download script
-cd
-wget -O /usr/bin/motd "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/motd"
-wget -O /usr/bin/benchmark "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/benchmark.sh"
-wget -O /usr/bin/speedtest "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/speedtest_cli.py"
-wget -O /usr/bin/ps-mem "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/ps_mem.py"
-wget -O /usr/bin/dropmon "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/dropmon.sh"
-wget -O /usr/bin/menu "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/menu.sh"
-wget -O /usr/bin/user-active-list "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/user-active-list.sh"
-wget -O /usr/bin/user-add "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/user-add.sh"
-wget -O /usr/bin/user-add-pptp "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/user-add-pptp.sh"
-wget -O /usr/bin/user-del "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/user-del.sh"
-wget -O /usr/bin/disable-user-expire "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/disable-user-expire.sh"
-wget -O /usr/bin/delete-user-expire "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/delete-user-expire.sh"
-wget -O /usr/bin/banned-user "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/banned-user.sh"
-wget -O /usr/bin/unbanned-user "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/unbanned-user.sh"
-wget -O /usr/bin/user-expire-list "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/user-expire-list.sh"
-wget -O /usr/bin/user-gen "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/user-gen.sh"
-wget -O /usr/bin/userlimit.sh "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/userlimit.sh"
-wget -O /usr/bin/userlimitssh.sh "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/userlimitssh.sh"
-wget -O /usr/bin/user-list "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/user-list.sh"
-wget -O /usr/bin/user-login "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/user-login.sh"
-wget -O /usr/bin/user-pass "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/user-pass.sh"
-wget -O /usr/bin/user-renew "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/user-renew.sh"
-wget -O /usr/bin/clearcache.sh "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/clearcache.sh"
-wget -O /usr/bin/bannermenu "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/bannermenu"
-cd
-
-#rm -rf /etc/cron.weekly/
-#rm -rf /etc/cron.hourly/
-#rm -rf /etc/cron.monthly/
-rm -rf /etc/cron.daily/
-wget -O /root/passwd "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/passwd.sh"
-chmod +x /root/passwd
-echo "01 23 * * * root /root/passwd" > /etc/cron.d/passwd
-
-echo "*/30 * * * * root service dropbear restart" > /etc/cron.d/dropbear
-echo "00 23 * * * root /usr/bin/disable-user-expire" > /etc/cron.d/disable-user-expire
-echo "0 */12 * * * root /sbin/reboot" > /etc/cron.d/reboot
-#echo "00 01 * * * root echo 3 > /proc/sys/vm/drop_caches && swapoff -a && swapon -a" > /etc/cron.d/clearcacheram3swap
-echo "*/30 * * * * root /usr/bin/clearcache.sh" > /etc/cron.d/clearcache1
-
-cd
-chmod +x /usr/bin/motd
-chmod +x /usr/bin/benchmark
-chmod +x /usr/bin/speedtest
-chmod +x /usr/bin/ps-mem
-#chmod +x /usr/bin/autokill
-chmod +x /usr/bin/dropmon
-chmod +x /usr/bin/menu
-chmod +x /usr/bin/user-active-list
-chmod +x /usr/bin/user-add
-chmod +x /usr/bin/user-add-pptp
-chmod +x /usr/bin/user-del
-chmod +x /usr/bin/disable-user-expire
-chmod +x /usr/bin/delete-user-expire
-chmod +x /usr/bin/banned-user
-chmod +x /usr/bin/unbanned-user
-chmod +x /usr/bin/user-expire-list
-chmod +x /usr/bin/user-gen
-chmod +x /usr/bin/userlimit.sh
-chmod +x /usr/bin/userlimitssh.sh
-chmod +x /usr/bin/user-list
-chmod +x /usr/bin/user-login
-chmod +x /usr/bin/user-pass
-chmod +x /usr/bin/user-renew
-chmod +x /usr/bin/clearcache.sh
-chmod +x /usr/bin/bannermenu
-cd
 
 # swap ram
 dd if=/dev/zero of=/swapfile bs=1024 count=1024k
