@@ -54,10 +54,6 @@ echo " Maaf, hanya IP yang berdaftar boleh menggunakan script ini!" | lolcat
  
 fi
 # go to root
-cdexit
-  
-fi
-# go to root
 cd
 
 # disable ipv6
