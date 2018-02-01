@@ -24,39 +24,6 @@ fi
 
 	source="http://borneobesthosting.me/autoscript"
 
-# go to root
-cd
-# text gambar
-apt-get install boxes
-
-# color text
-cd
-rm -rf /root/.bashrc
-wget -O /root/.bashrc "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/.bashrc"
-
-# install lolcat
-sudo apt-get -y install ruby
-sudo gem install lolcat
-
-clear
-# check registered ip
-wget -q -O IP "http://borneobesthosting.me/autoscript/Debian7/IP.txt"
-if ! grep -w -q $MYIP IP; then
-clear
-echo ""
-echo "   WELCOME TO AUTOSCRIPT SERVICE "| lolcat
-echo "  ===================================================================="| lolcat
-echo "  # 	                   Contact Me                            #"| lolcat
-echo "  #            TELEGRAM  :  https://t.me/orangkuatsabahanterkini     #"| lolcat
-echo "  #               GROUP  :   https://                                #"| lolcat
-echo "  #             CHANNEL  : @NewPremiumService                        #"| lolcat
-echo "  #------------------------------------------------------------------#"| lolcat
-echo "  ===================================================================="| lolcat
-	rm /root/IP
-	rm -f /root/IP
-	exit
- 
-fi
 
 # go to root
 cd
