@@ -28,23 +28,6 @@ fi
 # go to root
 cd
 
-red='\e[1;31m'
-               green='\e[0;32m'
-               NC='\e[0m'
-
-               echo -e "\e[38;5;82m Connecting to Autoscript Orangkuatsabahan..." | lolcat
-			   sleep 1
-
-			   echo -e " Connecting to your ip : $myip .... " | lolcat
-               sleep 2
-                          echo -e  Proses ini akan mengambil masa 10-15 minit" | lolcat
-		sleep 2.5	  
-			   echo -e " IP Bos Berjaya Di Daftarkan..." | lolcat
-               sleep 1.5
-               
-			   echo -e "Mula Setup..." | lolcat
-               sleep 1
-	       cd
 
 # disable ipv6
 echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
@@ -114,17 +97,20 @@ apt-file update
 vnstat -u -i eth0
 service vnstat restart
 
+
 # install webserver
 cd
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
-wget -q -O /etc/nginx/nginx.conf "http://borneobesthosting.me/autoscript/vps.conf/nginx.conf"
-echo "<pre>Default Webpage</pre><br/><pre>Auto Installer Script Premium - ForNesia Community</pre>" > /home/fns/public_html/index.html
-echo "<?php phpinfo(); ?>" > /home/fns/public_html/info.php
-wget -q -O /etc/nginx/conf.d/vps.conf "http://borneobesthosting.me/autoscript/vps.conf/vps.conf"
+wget -O /etc/nginx/nginx.conf "http://borneobesthosting.me/autoscript/nginx.conf"
+mkdir -p /home/vps/public_html
+echo "<pre>Modified by InsomNet4u</pre>" > /home/vps/public_html/index.html
+echo "<?php phpinfo(); ?>" > /home/vps/public_html/info.php
+wget -O /etc/nginx/conf.d/vps.conf http://borneobesthosting.me/autoscript/vps.conf"
 sed -i 's/listen = \/var\/run\/php5-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php5/fpm/pool.d/www.conf
 service php5-fpm restart
 service nginx restart
+
 
 #install PPTP
 apt-get -y install pptpd
