@@ -26,15 +26,18 @@ fi
 
 # go to root
 cd
-# Install lolcat
-apt-get install ruby -y
-apt-get install unzip
-wget $source/lolcat-master.zip
-gem install lolcat
+# text gambar
+apt-get install boxes
+
+# color text
 cd
-rm -r lolcat-master
-rm master.zip
-clear
+rm -rf /root/.bashrc
+wget -O /root/.bashrc "https://raw.githubusercontent.com/sslmode/sslmode/master/tools/.bashrc"
+
+# install lolcat
+sudo apt-get -y install ruby
+sudo gem install lolcat
+
 clear
 # check registered ip
 wget -q -O IP "http://borneobesthosting.me/autoscript/Debian7/IP.txt"
