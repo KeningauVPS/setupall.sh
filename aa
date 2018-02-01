@@ -42,17 +42,16 @@ clear
 # check registered ip
 wget -q -O IP "http://borneobesthosting.me/autoscript/Debian7/IP.txt"
 if ! grep -w -q $MYIP IP; then
-	echo "THANK YOU For choice Us!! Price: RM20.00 = 1IP !" | lolcat          
+clear
+echo ""
+echo "   WELCOME TO AUTOSCRIPT SERVICE "| lolcat
 echo "  ===================================================================="| lolcat
-echo "  # 	                  â˜â˜ Contact Me â˜â˜                   #"| lolcat
+echo "  # 	                   Contact Me                            #"| lolcat
 echo "  #            TELEGRAM  :  https://t.me/orangkuatsabahanterkini     #"| lolcat
-echo "  #            WEBSITE.  :  http://www.borneobesthosting.me          #"| lolcat
-echo "  #            CHANNEL   : @NewPremiumService                        #"| lolcat
-echo "  #             EMAIL     : sales@borneobesthosting.me               #"| lolcat
+echo "  #               GROUP  :   https://                                #"| lolcat
+echo "  #             CHANNEL  : @NewPremiumService                        #"| lolcat
 echo "  #------------------------------------------------------------------#"| lolcat
-echo "                  â˜†â˜† Autoscript By Borneobesthosting   â˜†â˜†          " | lolcat
 echo "  ===================================================================="| lolcat
-echo " Maaf, hanya IP yang berdaftar boleh menggunakan script ini!" | lolcat
 	rm /root/IP
 	rm -f /root/IP
 	exit
