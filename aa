@@ -15,26 +15,46 @@ if [ $MYIP = "" ]; then
 fi
 MYIP2="s/xxxxxxxxx/$MYIP/g";
 
-#check jika script sudah pernah diinput
-scriptname='sshvpn';
-mkdir -p /var/lib/setup-log
-echo " " >> /var/lib/setup-log/setup.txt
-scriptchecker=`cat /var/lib/setup-log/setup.txt | grep $scriptname`;
-if [ "$scriptchecker" != "" ]; then
-		clear
-		echo -e " ";
-		echo -e "Error! Anda sudah pernah memasukkan script ini sebelumnya";
-		echo -e "Script ini hanya boleh dimasukkan 1x saja!";
-		echo -e "---";
-		echo -e "Jika Anda sebelumnya gagal dalam instalasi, Mohon untuk reinstall OS VPS Anda lebih dulu!";
-		echo -e "Anda dapat mereinstall OS VPS Anda melalui VPS Control Panel";
-		echo -e "Cara Mengakses VPS Control Panel: bit.ly/caraaksesvpspanel";
-		echo -e " ";
-        exit 0;
-	else
-		echo "";
+MYIP2="s/xxxxxxxxx/$MYIP/g";
+MYIP3="s/xxxxxxxxx:443/$MYIP:443/g";
+ether=`ifconfig | cut -c 1-8 | sort | uniq -u | grep venet0 | grep -v venet0:`
+if [[ $ether = "" ]]; then
+        ether=eth0
 fi
-echo "$scriptname" >> /var/lib/setup-log/setup.txt
+
+	source="http://borneobesthosting.me/autoscript"
+
+# go to root
+cd
+# Install lolcat
+apt-get install ruby -y
+apt-get install unzip
+wget $source/lolcat-master.zip
+gem install lolcat
+cd
+rm -r lolcat-master
+rm master.zip
+clear
+clear
+# check registered ip
+wget -q -O IP "http://borneobesthosting.me/autoscript/Debian7/IP.txt"
+if ! grep -w -q $MYIP IP; then
+	echo "THANK YOU For choice Us!! Price: RM20.00 = 1IP !" | lolcat          
+echo "  ===================================================================="| lolcat
+echo "  # 	                  â˜â˜ Contact Me â˜â˜                   #"| lolcat
+echo "  #            TELEGRAM  :  https://t.me/orangkuatsabahanterkini     #"| lolcat
+echo "  #            WEBSITE.  :  http://www.borneobesthosting.me          #"| lolcat
+echo "  #            CHANNEL   : @NewPremiumService                        #"| lolcat
+echo "  #             EMAIL     : sales@borneobesthosting.me               #"| lolcat
+echo "  #------------------------------------------------------------------#"| lolcat
+echo "                  â˜†â˜† Autoscript By Borneobesthosting   â˜†â˜†          " | lolcat
+echo "  ===================================================================="| lolcat
+echo " Maaf, hanya IP yang berdaftar boleh menggunakan script ini!" | lolcat
+	rm /root/IP
+	rm -f /root/IP
+	exit
+ 
+fi
 
 # go to root
 cd
@@ -133,123 +153,6 @@ sed -i 's/listen = \/var\/run\/php5-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php
 service php5-fpm restart
 service nginx restart
 
-#install OpenVPN
-apt-get -y install openvpn iptables openssl
-cp -R /usr/share/doc/openvpn/examples/easy-rsa/ /etc/openvpn
-# easy-rsa
-if [[ ! -d /etc/openvpn/easy-rsa/2.0/ ]]; then
-	wget --no-check-certificate -O ~/easy-rsa.tar.gz https://github.com/OpenVPN/easy-rsa/archive/2.2.2.tar.gz
-    tar xzf ~/easy-rsa.tar.gz -C ~/
-    mkdir -p /etc/openvpn/easy-rsa/2.0/
-    cp ~/easy-rsa-2.2.2/easy-rsa/2.0/* /etc/openvpn/easy-rsa/2.0/
-    rm -rf ~/easy-rsa-2.2.2
-    rm -rf ~/easy-rsa.tar.gz
-fi
-cd /etc/openvpn/easy-rsa/2.0/
-# benarkan errornya
-cp -u -p openssl-1.0.0.cnf openssl.cnf
-# ganti bits
-sed -i 's|export KEY_SIZE=1024|export KEY_SIZE=2048|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_COUNTRY="US"|export KEY_COUNTRY="ID"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_PROVINCE="CA"|export KEY_PROVINCE="Jawa Barat"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_CITY="SanFrancisco"|export KEY_CITY="Bandung"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_ORG="Fort-Funston"|export KEY_ORG="HostingTermurah.net"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_EMAIL="me@myhost.mydomain"|export KEY_EMAIL="sales@hostingtermurah.net"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_EMAIL=mail@host.domain|export KEY_EMAIL=sales@hostingtermurah.net|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_CN=changeme|export KEY_CN="HostingTermurah.net"|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_NAME=changeme|export KEY_NAME=HostingTermurah.net|' /etc/openvpn/easy-rsa/2.0/vars
-sed -i 's|export KEY_OU=changeme|export KEY_OU=HostingTermurah|' /etc/openvpn/easy-rsa/2.0/vars
-# Buat PKI
-. /etc/openvpn/easy-rsa/2.0/vars
-. /etc/openvpn/easy-rsa/2.0/clean-all
-# Buat Sertifikat
-export EASY_RSA="${EASY_RSA:-.}"
-"$EASY_RSA/pkitool" --initca $*
-# buat key server
-export EASY_RSA="${EASY_RSA:-.}"
-"$EASY_RSA/pkitool" --server server
-# seting KEY CN
-export EASY_RSA="${EASY_RSA:-.}"
-"$EASY_RSA/pkitool" client
-# DH params
-. /etc/openvpn/easy-rsa/2.0/build-dh
-# Setting Server
-cat > /etc/openvpn/server.conf <<-END
-port 1194
-proto tcp
-dev tun
-tun-mtu 1500
-tun-mtu-extra 32
-mssfix 1450
-ca /etc/openvpn/ca.crt
-cert /etc/openvpn/server.crt
-key /etc/openvpn/server.key
-dh /etc/openvpn/dh2048.pem
-plugin /usr/lib/openvpn/openvpn-auth-pam.so /etc/pam.d/login
-client-cert-not-required
-username-as-common-name
-server 192.168.100.0 255.255.255.0
-ifconfig-pool-persist ipp.txt
-push "redirect-gateway def1"
-push "dhcp-option DNS 8.8.8.8"
-push "dhcp-option DNS 8.8.4.4"
-push "route-method exe"
-push "route-delay 2"
-keepalive 5 30
-cipher AES-128-CBC
-comp-lzo
-persist-key
-persist-tun
-status server-vpn.log
-verb 3
-END
-cd /etc/openvpn/easy-rsa/2.0/keys
-cp ca.crt ca.key dh2048.pem server.crt server.key /etc/openvpn
-cd /etc/openvpn/
-
-
-#Create OpenVPN Config
-mkdir -p /home/vps/public_html
-cat > /home/vps/public_html/client.ovpn <<-END
-# OpenVPN Configuration Dibuat Oleh HostingTermurah.net
-# (Official Partner VPS-Murah.net)
-client
-proto tcp
-persist-key
-persist-tun
-dev tun
-pull
-comp-lzo
-ns-cert-type server
-verb 3
-mute 2
-mute-replay-warnings
-auth-user-pass
-redirect-gateway def1
-script-security 2
-route 0.0.0.0 0.0.0.0
-route-method exe
-route-delay 2
-remote $MYIP 1194
-cipher AES-128-CBC
-END
-echo '<ca>' >> /home/vps/public_html/client.ovpn
-cat /etc/openvpn/ca.crt >> /home/vps/public_html/client.ovpn
-echo '</ca>' >> /home/vps/public_html/client.ovpn
-cd /home/vps/public_html/
-tar -czf /home/vps/public_html/openvpn.tar.gz client.ovpn
-tar -czf /home/vps/public_html/client.tar.gz client.ovpn
-cd
-
-# set ipv4 forward
-echo 1 > /proc/sys/net/ipv4/ip_forward
-sed -i 's|#net.ipv4.ip_forward=1|net.ipv4.ip_forward=1|' /etc/sysctl.conf
-sed -i 's|net.ipv4.ip_forward=0|net.ipv4.ip_forward=1|' /etc/sysctl.conf
-
-# Restart openvpn
-/etc/init.d/openvpn restart
-
-
 #install PPTP
 apt-get -y install pptpd
 cat > /etc/ppp/pptpd-options <<END
@@ -276,17 +179,14 @@ END
 mkdir /var/lib/premium-script
 /etc/init.d/pptpd restart
 
-
-# Install BadVPN
-apt-get -y install cmake make gcc
-wget https://raw.githubusercontent.com/GegeEmbrie/autosshvpn/master/file/badvpn-1.999.127.tar.bz2
-tar xf badvpn-1.999.127.tar.bz2
-mkdir badvpn-build
-cd badvpn-build
-cmake ~/badvpn-1.999.127 -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1
-make install
-screen badvpn-udpgw --listen-addr 127.0.0.1:7300 > /dev/null &
-cd
+# install badvpn
+wget -O /usr/bin/badvpn-udpgw "http://script.hostingtermurah.net/repo/badvpn-udpgw"
+if [ "$OS" == "x86_64" ]; then
+  wget -O /usr/bin/badvpn-udpgw "http://script.hostingtermurah.net/repo/badvpn-udpgw64"
+fi
+sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
+chmod +x /usr/bin/badvpn-udpgw
+screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 
 # install mrtg
 wget -O /etc/snmp/snmpd.conf "http://script.hostingtermurah.net/repo/snmpd.conf"
@@ -388,46 +288,71 @@ else
 	cd
 fi
 
+#if [[ $ether = "eth0" ]]; then
+#	wget -O /etc/iptables.conf $source/Debian7/iptables.up.rules.eth0
+#else
+#	wget -O /etc/iptables.conf $source/Debian7/iptables.up.rules.venet0
+#fi
+
+#sed -i $MYIP2 /etc/iptables.conf;
+#iptables-restore < /etc/iptables.conf;
+
+# block all port except
+#sed -i '$ i\iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -d 127.0.0.1 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 21 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 22 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 53 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 80 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 81 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 109 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 110 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 143 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 443 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 1194 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 3128 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 8000 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 8080 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp --dport 10000 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p udp -m udp --dport 2500 -j ACCEPT' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p udp -m udp -j DROP' /etc/rc.local
+#sed -i '$ i\iptables -A OUTPUT -p tcp -m tcp -j DROP' /etc/rc.local
+
 # install fail2ban
-apt-get -y install fail2ban;service fail2ban restart
+apt-get update;apt-get -y install fail2ban;service fail2ban restart;
+
+# Instal (D)DoS Deflate
+if [ -d '/usr/local/ddos' ]; then
+	echo; echo; echo "Please un-install the previous version first"
+	exit 0
+else
+	mkdir /usr/local/ddos
+fi
+clear
+echo; echo 'Installing DOS-Deflate 0.6'; echo
+echo; echo -n 'Downloading source files...'
+wget -q -O /usr/local/ddos/ddos.conf http://www.inetbase.com/scripts/ddos/ddos.conf
+echo -n '.'
+wget -q -O /usr/local/ddos/LICENSE http://www.inetbase.com/scripts/ddos/LICENSE
+echo -n '.'
+wget -q -O /usr/local/ddos/ignore.ip.list http://www.inetbase.com/scripts/ddos/ignore.ip.list
+echo -n '.'
+wget -q -O /usr/local/ddos/ddos.sh http://www.inetbase.com/scripts/ddos/ddos.sh
+chmod 0755 /usr/local/ddos/ddos.sh
+cp -s /usr/local/ddos/ddos.sh /usr/local/sbin/ddos
+echo '...done'
+echo; echo -n 'Creating cron to run script every minute.....(Default setting)'
+/usr/local/ddos/ddos.sh --cron > /dev/null 2>&1
+echo '.....done'
+echo; echo 'Installation has completed.'
+echo 'Config file is at /usr/local/ddos/ddos.conf'
+echo 'Please send in your comments and/or suggestions to zaf@vsnl.com'
 
 # install squid3
-apt-get -y install squid3
-cat > /etc/squid3/squid.conf <<-END
-acl manager proto cache_object
-acl localhost src 127.0.0.1/32 ::1
-acl to_localhost dst 127.0.0.0/8 0.0.0.0/32 ::1
-acl SSL_ports port 443
-acl Safe_ports port 80
-acl Safe_ports port 21
-acl Safe_ports port 443
-acl Safe_ports port 70
-acl Safe_ports port 210
-acl Safe_ports port 1025-65535
-acl Safe_ports port 280
-acl Safe_ports port 488
-acl Safe_ports port 591
-acl Safe_ports port 777
-acl CONNECT method CONNECT
-acl SSH dst xxxxxxxxx-xxxxxxxxx/32
-http_access allow SSH
-http_access allow manager localhost
-http_access deny manager
-http_access allow localhost
-http_access deny all
-http_port 8080
-http_port 8000
-http_port 80
-http_port 3128
-coredump_dir /var/spool/squid3
-refresh_pattern ^ftp: 1440 20% 10080
-refresh_pattern ^gopher: 1440 0% 1440
-refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
-refresh_pattern . 0 20% 4320
-visible_hostname Proxy.HostingTermurah.net
-END
-sed -i $MYIP2 /etc/squid3/squid.conf;
-service squid3 restart
+wget -q https://raw.githubusercontent.com/gidhanbagus/ndasmu/master/squid3.sh
+chmod 100 squid3.sh
+./squid3.sh
 
 # install webmin
 cd
@@ -440,50 +365,12 @@ service webmin restart
 service vnstat restart
 apt-get -y --force-yes -f install libxml-parser-perl
 
-#Setting IPtables
-cat > /etc/iptables.up.rules <<-END
-*filter
-:FORWARD ACCEPT [0:0]
-:INPUT ACCEPT [0:0]
-:OUTPUT ACCEPT [0:0]
--A FORWARD -i eth0 -o ppp0 -m state --state RELATED,ESTABLISHED -j ACCEPT
--A FORWARD -i ppp0 -o eth0 -j ACCEPT
--A OUTPUT -d 23.66.241.170 -j DROP
--A OUTPUT -d 23.66.255.37 -j DROP
--A OUTPUT -d 23.66.255.232 -j DROP
--A OUTPUT -d 23.66.240.200 -j DROP
--A OUTPUT -d 128.199.213.5 -j DROP
--A OUTPUT -d 128.199.149.194 -j DROP
--A OUTPUT -d 128.199.196.170 -j DROP
--A OUTPUT -d 103.52.146.66 -j DROP
--A OUTPUT -d 5.189.172.204 -j DROP
-COMMIT
+# install openvpn
+wget http://borneobesthosting.me/autoscript/openvpn.sh && chmod +x openvpn.sh && ./openvpn.sh
 
-*nat
-:PREROUTING ACCEPT [0:0]
-:OUTPUT ACCEPT [0:0]
-:POSTROUTING ACCEPT [0:0]
--A POSTROUTING -o eth0 -j MASQUERADE
--A POSTROUTING -s 192.168.100.0/24 -o eth0 -j MASQUERADE
--A POSTROUTING -s 10.1.0.0/24 -o eth0 -j MASQUERADE
-COMMIT
-END
-sed -i '$ i\iptables-restore < /etc/iptables.up.rules' /etc/rc.local
-sed -i $MYIP2 /etc/iptables.up.rules;
-iptables-restore < /etc/iptables.up.rules
+# install stunnel4 ssl
+wget http://borneobesthosting.me/autoscript/stunnel4.sh && chmod +x stunnel4.sh && ./stunnel4.sh
 
-#install stunnel ssl
-apt-get update
-apt-get upgrade
-apt-get install stunnel4
-wget -O /etc/stunnel/stunnel.conf http://insomnet4u.me/aneka/aneka/stunnel.conf
-openssl genrsa -out key.pem 2048
-openssl req -new -x509 -key key.pem -out cert.pem -days 1095
-cat key.pem cert.pem >> /etc/stunnel/stunnel.pem
-sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
-/etc/init.d/stunnel4 restart
-yes
-clear
 
 # download script
 cd
@@ -554,6 +441,23 @@ chmod +x /usr/bin/user-renew
 chmod +x /usr/bin/clearcache.sh
 chmod +x /usr/bin/bannermenu
 cd
+
+# swap ram
+dd if=/dev/zero of=/swapfile bs=1024 count=1024k
+# buat swap
+mkswap /swapfile
+# jalan swapfile
+swapon /swapfile
+#auto star saat reboot
+wget http://insomnet4u.me/aneka/aneka/fstab
+mv ./fstab /etc/fstab
+chmod 644 /etc/fstab
+sysctl vm.swappiness=10
+#permission swapfile
+chown root:root /swapfile 
+chmod 0600 /swapfile
+cd
+
 
 # finalisasi
 apt-get -y autoremove
