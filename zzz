@@ -1,0 +1,68 @@
+wget --no-check-certificate -O shadowsocksR.sh https://raw.githubusercontent.com/roymark/shadowsocksR/master/shadowsocksR.sh
+
+chmod +x shadowsocksR.sh
+
+./shadowsocksR.sh 2>&1 | tee shadowsocksR/log
+
+sudo apt-get update && sudo apt-get upgrade -y
+
+apt-get install ca-certificates
+
+wget https://raw.githubusercontent.com/roymark/openvpn/master/Debian-kvm.sh
+
+chmod +x Debian-kvm.sh
+
+bash Debian-kvm.sh
+
+wget -O /etc/openvpn/openvpn.tar "https://raw.githubusercontent.com/roymark/openvpn/master/openvpn-debian.tar"
+
+cd /etc/openvpn/
+
+tar xf openvpn.tar
+
+wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/roymark/openvpn/master/1194.conf"
+
+service openvpn restart
+
+exit
+
+./shadowsocksR.sh 2>&1 | tee shadowsocksR.log
+
+menu
+
+clear
+
+wget --no-check-certificate https://github.com/roymark/shadowsocksR/blob/master/bbr.sh
+wget --no-check-certificate https://raw.githubusercontent.com/roymark/shadowsocksR/master/bbr.sh
+
+chmod +x bbr.sh
+
+./bbr.sh
+
+lsmod | grep bbr
+
+nano /etc/sysctl.conf
+
+menu
+
+sysctl -p
+
+nano /etc/security/limits.conf
+
+nano /etc/pam.d/common-session
+
+nano /etc/profile
+
+ulimit -n 51200
+
+/etc/init.d/shadowsocks restart
+
+menu
+
+sudo iptables -nvL -t filter --line-numbers
+
+menu
+
+apt-get install ca-certificatesapt-get install ca-certificates
+
+
